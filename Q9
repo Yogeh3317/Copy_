@@ -1,0 +1,53 @@
+Que.9
+Write a python program to implement k-means algorithm to
+build prediction model
+(Use Credit Card Dataset CC GENERAL.csv Download from
+kaggle.com)
+(External Data set required) (Only Run On R Studio Software)
+
+--------------------------------
+
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset from the CSV file
+dataset = pd.read_csv('CC GENERAL.csv')
+
+# Inspect the data
+print("First few rows of the dataset:")
+print(dataset.head())
+print("\nSummary of the dataset:")
+print(dataset.describe())
+
+# Remove any non-numeric columns if they exist (e.g., Customer IDs, etc.)
+if 'CUST_ID' in dataset.columns:  # Adjust this column name based on the actual dataset
+    dataset.drop(columns=['CUST_ID'], inplace=True)
+
+# Check for missing values and handle them
+print("\nChecking for missing values:")
+print(dataset.isnull().sum())
+
+# Replace missing values with the mean of the column
+dataset.fillna(dataset.mean(), inplace=True)
+
+# Normalize the data
+dataset_scaled = (dataset - dataset.mean()) / dataset.std()
+
+# Fit the K-means model
+kmeans = KMeans(n_clusters=3, random_state=42)  # Adjust the number of clusters as needed
+dataset['Cluster'] = kmeans.fit_predict(dataset_scaled)
+
+# Visualize the clusters (use first two dimensions for simplicity)
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=dataset, x=dataset.columns[1], y=dataset.columns[2], hue='Cluster', palette='viridis')
+plt.title('K-means Clustering of Credit Card Data')
+plt.xlabel(dataset.columns[1])  # Replace with the appropriate column name
+plt.ylabel(dataset.columns[2])  # Replace with the appropriate column name
+plt.legend(title='Cluster')
+plt.show()
+
+# Optional: Save the dataset with cluster labels
+dataset.to_csv('CC_GENERAL_with_Clusters.csv', index=False)
