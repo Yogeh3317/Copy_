@@ -44,7 +44,8 @@ model = GaussianNB()
 model.fit(X, y)
 
 # Step 6: Define the input for prediction (Weather = Overcast, Temperature = Mild)
-new_data = pd.DataFrame({'Weather': [2], 'Temperature': [1]})  # 2: Overcast, 1: Mild
+# Check the encoding: Overcast and Mild should match their respective codes
+new_data = pd.DataFrame({'Weather': [1], 'Temperature': [2]})  # Assuming 1: Overcast, 2: Mild
 
 # Step 7: Make the prediction
 prediction = model.predict(new_data)
@@ -52,3 +53,4 @@ prediction = model.predict(new_data)
 # Step 8: Display the result
 result = 'Yes' if prediction[0] == 1 else 'No'
 print(f"Prediction for Weather = Overcast and Temperature = Mild:\nPlay = {result}")
+
