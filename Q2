@@ -1,0 +1,62 @@
+Que.2
+Write a python program to implement complete data pre-
+processing in a given data set.(missing value, encoding categorical value, Splitting the
+dataset into the training and test sets and feature scaling.(Download dataset from
+github.com). (R Studio)
+
+--------------------------------------------------------------------
+
+# Step 1: Load necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Step 2: Load the dataset from GitHub
+url = "https://raw.githubusercontent.com/suneet10/DataPreprocessing/main/Data.csv"
+dataset = pd.read_csv(url)
+
+# Step 3: Display the dataset to verify it loaded correctly
+print("Dataset:")
+print(dataset.head())  # Display the first few rows
+
+# Step 4: Handle missing values (replace NA with column mean)
+print("Handling missing values:")
+dataset['Age'].fillna(dataset['Age'].mean(), inplace=True)
+dataset['Salary'].fillna(dataset['Salary'].mean(), inplace=True)
+
+# Step 5: Encode categorical values
+print("\nEncoding categorical values:")
+dataset['Country'] = pd.factorize(dataset['Country'])[0]
+dataset['Purchased'] = pd.factorize(dataset['Purchased'])[0]
+
+# Step 6: Split the dataset into training and test sets
+X = dataset.drop('Purchased', axis=1)  # Features
+y = dataset['Purchased']  # Target variable
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+
+# Display the resulting training and test sets
+print("\nTraining Set:")
+print(X_train.head())
+print("\nTest Set:")
+print(X_test.head())
+
+# Step 7: Apply feature scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Convert back to DataFrame for consistency
+X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+
+# Display scaled data
+print("\nTraining Set after scaling:")
+print(X_train_scaled.head())
+print("\nTest Set after scaling:")
+print(X_test_scaled.head())
+
+# Step 8: Save the processed datasets as CSV files
+X_train_scaled.to_csv("training_set.csv", index=False)
+y_train.to_csv("y_training_set.csv", index=False)
+X_test_scaled.to_csv("test_set.csv", index=False)
+y_test.to_csv("y_test_set.csv", index=False)
