@@ -21,11 +21,11 @@ url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
 iris_data <- read.csv(url, header = FALSE)
 colnames(iris_data) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
 
-# Step 3: Preprocessing the dataset - Discretize numeric features into categories
-iris_data$Sepal.Length <- cut(iris_data$Sepal.Length, breaks = 3, labels = c("Short", "Medium", "Long"))
-iris_data$Sepal.Width <- cut(iris_data$Sepal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide"))
-iris_data$Petal.Length <- cut(iris_data$Petal.Length, breaks = 3, labels = c("Short", "Medium", "Long"))
-iris_data$Petal.Width <- cut(iris_data$Petal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide"))
+# Step 3: Preprocessing the dataset - Convert to factors
+iris_data$Sepal.Length <- as.factor(cut(iris_data$Sepal.Length, breaks = 3, labels = c("Short", "Medium", "Long")))
+iris_data$Sepal.Width <- as.factor(cut(iris_data$Sepal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide")))
+iris_data$Petal.Length <- as.factor(cut(iris_data$Petal.Length, breaks = 3, labels = c("Short", "Medium", "Long")))
+iris_data$Petal.Width <- as.factor(cut(iris_data$Petal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide")))
 
 # Step 4: Convert the data to transactions format suitable for the Apriori algorithm
 iris_transactions <- as(iris_data, "transactions")
