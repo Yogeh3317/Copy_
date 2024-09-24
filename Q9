@@ -7,47 +7,50 @@ kaggle.com)
 
 --------------------------------
 
-import pandas as pd
-import numpy as np
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Step 1: Install and load necessary packages
+# Uncomment and run if needed
+# install.packages("ggplot2")
+# install.packages("dplyr")
+# install.packages("cluster")
+library(ggplot2)  # For data visualization
+library(dplyr)     # For data manipulation
 
-# Load the dataset from the CSV file
-dataset = pd.read_csv('CC GENERAL.csv')
+# Step 2: Load the dataset from the CSV file
+dataset <- read.csv("CC GENERAL.csv")
 
-# Inspect the data
-print("First few rows of the dataset:")
-print(dataset.head())
-print("\nSummary of the dataset:")
-print(dataset.describe())
+# Step 3: Inspect the data
+cat("First few rows of the dataset:\n")
+print(head(dataset))
+cat("\nSummary of the dataset:\n")
+print(summary(dataset))
 
-# Remove any non-numeric columns if they exist (e.g., Customer IDs, etc.)
-if 'CUST_ID' in dataset.columns:  # Adjust this column name based on the actual dataset
-    dataset.drop(columns=['CUST_ID'], inplace=True)
+# Step 4: Remove non-numeric columns if they exist (e.g., Customer IDs)
+if ("CUST_ID" %in% colnames(dataset)) {
+  dataset <- dataset %>% select(-CUST_ID)
+}
 
-# Check for missing values and handle them
-print("\nChecking for missing values:")
-print(dataset.isnull().sum())
+# Step 5: Check for missing values and handle them
+cat("\nChecking for missing values:\n")
+print(colSums(is.na(dataset)))
 
-# Replace missing values with the mean of the column
-dataset.fillna(dataset.mean(), inplace=True)
+# Step 6: Replace missing values with the mean of the column
+dataset[is.na(dataset)] <- lapply(dataset, function(x) ifelse(is.numeric(x), mean(x, na.rm = TRUE), x))
 
-# Normalize the data
-dataset_scaled = (dataset - dataset.mean()) / dataset.std()
+# Step 7: Normalize the data
+dataset_scaled <- scale(dataset)
 
-# Fit the K-means model
-kmeans = KMeans(n_clusters=3, random_state=42)  # Adjust the number of clusters as needed
-dataset['Cluster'] = kmeans.fit_predict(dataset_scaled)
+# Step 8: Fit the K-means model
+set.seed(42)  # For reproducibility
+kmeans_model <- kmeans(dataset_scaled, centers = 3)  # Adjust the number of clusters as needed
 
-# Visualize the clusters (use first two dimensions for simplicity)
-plt.figure(figsize=(10, 6))
-sns.scatterplot(data=dataset, x=dataset.columns[1], y=dataset.columns[2], hue='Cluster', palette='viridis')
-plt.title('K-means Clustering of Credit Card Data')
-plt.xlabel(dataset.columns[1])  # Replace with the appropriate column name
-plt.ylabel(dataset.columns[2])  # Replace with the appropriate column name
-plt.legend(title='Cluster')
-plt.show()
+# Step 9: Add cluster assignments to the dataset
+dataset$Cluster <- kmeans_model$cluster
+
+# Step 10: Visualize the clusters (using first two dimensions for simplicity)
+ggplot(dataset, aes(x = dataset_scaled[, 1], y = dataset_scaled[, 2], color = as.factor(Cluster))) +
+  geom_point() +
+  labs(title = "K-means Clustering of Credit Card Data", x = "Feature 1", y = "Feature 2", color = "Cluster") +
+  theme_minimal()
 
 # Optional: Save the dataset with cluster labels
-dataset.to_csv('CC_GENERAL_with_Clusters.csv', index=False)
+write.csv(dataset, 'CC_GENERAL_with_Clusters.csv', row.names = FALSE)
