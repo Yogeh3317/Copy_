@@ -9,47 +9,42 @@ x = np.array([1,2,3,4,5,6,7,8])
 y = np.array([7,14,15,18,19,21,26,23])
 
 --------------------------------------------------
-# Step 1: Install and Load Necessary Packages
-# Uncomment and run if needed
-# install.packages("ggplot2")
-library(ggplot2)  # For data visualization
 
-# Step 2: Define the Data
-x <- c(1, 2, 3, 4, 5, 6, 7, 8)
-y <- c(7, 14, 15, 18, 19, 21, 26, 23)
+# Step 1: Import necessary libraries
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
-# Step 3: Combine into a Data Frame
-data <- data.frame(x = x, y = y)
+# Step 2: Define the data
+x = np.array([1, 2, 3, 4, 5, 6, 7, 8]).reshape(-1, 1)  # Reshape for sklearn
+y = np.array([7, 14, 15, 18, 19, 21, 26, 23])
 
-# Step 4: Fit the Linear Model
-model <- lm(y ~ x, data = data)
+# Step 3: Fit the Linear Model
+model = LinearRegression()
+model.fit(x, y)
 
-# Step 5: Display the Summary of the Model
-summary(model)
+# Step 4: Get estimated coefficients
+b0 = model.intercept_  # Intercept
+b1 = model.coef_[0]    # Slope
 
-# Step 6: Extract Coefficients
-coefficients <- coef(model)
-b0 <- coefficients["(Intercept)"]
-b1 <- coefficients["x"]
-cat("Estimated coefficients:\n")
-cat("Intercept (b0): ", b0, "\n")
-cat("Slope (b1): ", b1, "\n")
+print("Estimated coefficients:")
+print(f"Intercept (b0): {b0}")
+print(f"Slope (b1): {b1}")
 
-# Step 7: Make Predictions
-data$predicted <- predict(model, data)
+# Step 5: Make predictions
+predicted = model.predict(x)
 
-# Step 8: Calculate Residuals
-data$residuals <- data$y - data$predicted
+# Step 6: Calculate residuals
+residuals = y - predicted
+print("\nResiduals:")
+print(residuals)
 
-# Step 9: Display Residuals
-cat("\nResiduals:\n")
-print(data$residuals)
-
-# Step 10: Plot the Data and Regression Line
-ggplot(data, aes(x = x, y = y)) +
-  geom_point(color = "blue") +
-  geom_smooth(method = "lm", color = "red") +
-  labs(title = "Simple Linear Regression",
-       x = "X",
-       y = "Y") +
-  theme_minimal()
+# Step 7: Plot the data and regression line
+plt.scatter(x, y, color='blue', label='Data Points')
+plt.plot(x, predicted, color='red', label='Regression Line')
+plt.title('Simple Linear Regression')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.show()
