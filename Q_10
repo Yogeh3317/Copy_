@@ -6,72 +6,63 @@ Wholesale customers data dataset from github.com).
 
 --------------------------
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy.cluster.hierarchy import dendrogram, linkage, cut_tree
-from sklearn.preprocessing import StandardScaler
+# Step 1: Install and load necessary packages
+# Uncomment and run if needed
+# install.packages("ggplot2")
+# install.packages("dplyr")
+# install.packages("factoextra")
+library(ggplot2)      # For data visualization
+library(dplyr)        # For data manipulation
+library(factoextra)   # For hierarchical clustering visualization
 
-# Step 1: Load the dataset from the CSV file
-dataset = pd.read_csv('Wholesale customers data.csv')
+# Step 2: Load the dataset from the CSV file
+dataset <- read.csv("Wholesale customers data.csv")
 
-# Step 2: Inspect the data
-print("First few rows of the dataset:")
-print(dataset.head())
-print("\nSummary of the dataset:")
-print(dataset.describe())
+# Step 3: Inspect the data
+cat("First few rows of the dataset:\n")
+print(head(dataset))
+cat("\nSummary of the dataset:\n")
+print(summary(dataset))
 
-# Remove any non-numeric columns if they exist (e.g., Customer IDs)
-if 'Channel' in dataset.columns:  # Example: remove categorical column
-    dataset.drop(columns=['Channel'], inplace=True)
+# Remove any non-numeric columns if they exist (e.g., Channel)
+if ("Channel" %in% colnames(dataset)) {
+  dataset <- dataset %>% select(-Channel)
+}
 
 # Check for missing values
-print("\nChecking for missing values:")
-print(dataset.isnull().sum())
+cat("\nChecking for missing values:\n")
+print(colSums(is.na(dataset)))
 
 # Optionally, replace missing values with the mean of the column
-dataset.fillna(dataset.mean(), inplace=True)
+dataset[is.na(dataset)] <- lapply(dataset, function(x) ifelse(is.numeric(x), mean(x, na.rm = TRUE), x))
 
 # Normalize the data
-scaler = StandardScaler()
-dataset_scaled = scaler.fit_transform(dataset)
+dataset_scaled <- scale(dataset)
 
-# Step 3: Compute the distance matrix and perform hierarchical clustering
-linked = linkage(dataset_scaled, method='ward')
+# Step 4: Compute the distance matrix and perform hierarchical clustering
+distance_matrix <- dist(dataset_scaled, method = "euclidean")
+hc <- hclust(distance_matrix, method = "ward.D2")
 
-# Plot the dendrogram
-plt.figure(figsize=(10, 7))
-dendrogram(linked, orientation='top', labels=dataset.index, distance_sort='descending', show_leaf_counts=True)
-plt.title('Hierarchical Clustering Dendrogram')
-plt.xlabel('Samples')
-plt.ylabel('Distance')
-plt.show()
+# Step 5: Plot the dendrogram
+plot(hc, main = "Hierarchical Clustering Dendrogram", xlab = "Samples", ylab = "Distance", labels = FALSE)
 
-# Step 4: Cut the dendrogram to create clusters
-clusters = cut_tree(linked, n_clusters=4).flatten()  # Specify number of clusters
-dataset['Cluster'] = clusters
+# Step 6: Cut the dendrogram to create clusters
+clusters <- cutree(hc, k = 4)  # Specify number of clusters
+dataset$Cluster <- clusters
 
 # Inspect the clustering result
-print("\nFirst few rows with cluster assignments:")
-print(dataset.head())
+cat("\nFirst few rows with cluster assignments:\n")
+print(head(dataset))
 
 # Optional: Visualize the clusters using PCA for dimensionality reduction
-from sklearn.decomposition import PCA
-
-pca = PCA(n_components=2)
-pca_result = pca.fit_transform(dataset_scaled)
-dataset_pca = pd.DataFrame(pca_result, columns=['PC1', 'PC2'])
-dataset_pca['Cluster'] = dataset['Cluster']
+pca_result <- prcomp(dataset_scaled, center = TRUE, scale. = TRUE)
+pca_data <- data.frame(pca_result$x[, 1:2], Cluster = as.factor(dataset$Cluster))
 
 # Plot the PCA results with clusters
-plt.figure(figsize=(10, 6))
-sns.scatterplot(data=dataset_pca, x='PC1', y='PC2', hue='Cluster', palette='viridis', alpha=0.6)
-plt.title('Hierarchical Clustering (PCA-reduced Data)')
-plt.xlabel('Principal Component 1')
-plt.ylabel('Principal Component 2')
-plt.legend(title='Cluster')
-plt.show()
+ggplot(pca_data, aes(x = PC1, y = PC2, color = Cluster)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "Hierarchical Clustering (PCA-reduced Data)", x = "Principal Component 1", y = "Principal Component 2") +
+  theme_minimal()
 
 # Optional: Save the dataset with cluster labels
-dataset.to_csv('Wholesale_customers_with_Clusters.csv', index=False)
+write.csv(dataset, 'Wholesale_customers_with_Clusters.csv', row.names = FALSE)
