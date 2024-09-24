@@ -1,0 +1,30 @@
+Que.1 Data Pre-processing Write a R program to find all null
+values in a given data set and remove them.
+(Download dataset from github.com) ( For R Studio ) (Not Required External dataset)
+
+-------------------------------------------------------------------
+
+# Step 1: Install and load the required packages
+# Uncomment the line below if you haven't installed tidyverse before
+# install.packages("tidyverse")
+library(tidyverse)
+
+# Step 2: Load the dataset from GitHub
+url <- "https://raw.githubusercontent.com/suneet10/DataPreprocessing/main/Data.csv"
+dataset <- read.csv(url)
+
+# Step 3: Display the original dataset
+cat("Original Dataset:\n")
+print(dataset)
+
+# Step 4: Check for null values
+cat("\nCount of null values in each column:\n")
+null_values <- sapply(dataset, function(x) sum(is.na(x)))
+print(null_values)
+
+# Step 5: Remove rows with null values
+cleaned_dataset <- na.omit(dataset)
+
+# Step 6: Display the cleaned dataset
+cat("\nDataset after removing null values:\n")
+print(cleaned_dataset)
