@@ -1,0 +1,54 @@
+Que 4
+Consider following dataset
+weather=['Sunny','Sunny','Overcast','Rainy','Rainy','Rainy','Over
+cast','S
+unny','Sunny','Rainy','Sunny','Overcast','Overcast','Rainy']
+temp=['Hot','Hot','Hot','Mild','Cool','Cool','Cool','Mild','Cool','Mi
+ld','Mi
+ld','Mild','Hot','Mild']
+play=['No','No','Yes','Yes','Yes','No','Yes','No','Yes','Yes','Yes','Yes','Y
+es','No']. Use Naïve Bayes algorithm to predict[ 0:Overcast,
+2:Mild]
+tuple belongs to which class whether to play the sports or not. (Using R Studio)
+----------------------------------------------
+
+# Step 1: Import necessary libraries
+import pandas as pd
+from sklearn.naive_bayes import GaussianNB
+
+# Step 2: Create the dataset
+weather = ['Sunny', 'Sunny', 'Overcast', 'Rainy', 'Rainy', 'Rainy', 
+           'Overcast', 'Sunny', 'Sunny', 'Rainy', 'Sunny', 'Overcast', 
+           'Overcast', 'Rainy']
+temp = ['Hot', 'Hot', 'Hot', 'Mild', 'Cool', 'Cool', 'Cool', 
+        'Mild', 'Cool', 'Mild', 'Mild', 'Mild', 'Hot', 'Mild']
+play = ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 
+        'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'No']
+
+# Step 3: Create a DataFrame
+data = pd.DataFrame({
+    'Weather': weather,
+    'Temperature': temp,
+    'Play': play
+})
+
+# Step 4: Encode categorical variables
+data['Play'] = data['Play'].map({'Yes': 1, 'No': 0})  # Binary encoding for target variable
+data['Weather'] = data['Weather'].astype('category').cat.codes  # Convert weather to categorical codes
+data['Temperature'] = data['Temperature'].astype('category').cat.codes  # Convert temp to categorical codes
+
+# Step 5: Train the Naive Bayes model
+X = data[['Weather', 'Temperature']]  # Features
+y = data['Play']  # Target variable
+model = GaussianNB()
+model.fit(X, y)
+
+# Step 6: Define the input for prediction (Weather = Overcast, Temperature = Mild)
+new_data = pd.DataFrame({'Weather': [2], 'Temperature': [1]})  # 2: Overcast, 1: Mild
+
+# Step 7: Make the prediction
+prediction = model.predict(new_data)
+
+# Step 8: Display the result
+result = 'Yes' if prediction[0] == 1 else 'No'
+print(f"Prediction for Weather = Overcast and Temperature = Mild:\nPlay = {result}")
