@@ -8,6 +8,7 @@ https://www.w3schools.com/python/python_ml_multiple_regression.asp
 
 -----------------------------------
 
+
 # Step 1: Load necessary packages
 # Uncomment and run if needed
 # install.packages("ggplot2")
@@ -25,8 +26,8 @@ cat("\nSummary of the dataset:\n")
 print(summary(dataset))
 
 # Step 4: Fit the multiple linear regression model
-# Replace 'Feature1', 'Feature2', etc. with actual column names from the dataset
-model <- lm(Price ~ Feature1 + Feature2 + Feature3, data = dataset)
+# Replace 'Feature1', 'Feature2', and 'Feature3' with actual column names from the dataset
+model <- lm(Price ~ . , data = dataset)  # Using all other columns to predict Price
 
 # Step 5: Display the summary of the model
 cat("\nModel Summary:\n")
