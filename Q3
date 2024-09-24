@@ -1,0 +1,54 @@
+Que 3 Classification
+Write a Python program build Decision Tree Classifier using
+Scikit-learn
+package for diabetes data set (download database from
+https://www.kaggle.com/uciml/pima-indians-diabetes-database) (R Studio)
+
+-------------------------------------------------------
+
+# Step 1: Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+from sklearn import tree
+
+# Step 2: Load the dataset from the provided URL
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
+column_names = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
+                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age", "Outcome"]
+dataset = pd.read_csv(url, header=None, names=column_names)
+
+# Step 3: Display the first few rows of the dataset
+print("First few rows of the dataset:")
+print(dataset.head())
+
+# Step 4: Split the dataset into training and test sets
+X = dataset.drop("Outcome", axis=1)  # Features
+y = dataset["Outcome"]  # Target variable
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+
+# Step 5: Build the decision tree classifier
+print("\nTraining Decision Tree Classifier...")
+classifier = DecisionTreeClassifier()
+classifier.fit(X_train, y_train)
+
+# Step 6: Plot the decision tree
+plt.figure(figsize=(12,8))
+tree.plot_tree(classifier, filled=True, feature_names=X.columns, class_names=["No Diabetes", "Diabetes"])
+plt.title("Decision Tree for Diabetes Dataset")
+plt.show()
+
+# Step 7: Make predictions on the test set
+print("\nMaking predictions on the test set...")
+y_pred = classifier.predict(X_test)
+
+# Step 8: Evaluate the model
+print("\nConfusion Matrix:")
+conf_matrix = confusion_matrix(y_test, y_pred)
+print(conf_matrix)
+
+# Calculate accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\nAccuracy of the Decision Tree Classifier: {round(accuracy * 100, 2)}%")
