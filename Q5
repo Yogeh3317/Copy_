@@ -1,0 +1,44 @@
+Que 5
+Association Rules
+Write a R Programme to read the dataset (“Iris.csv”).
+dataset download from
+(https://archive.ics.uci.edu/ml/datasets/iris) and apply Apriori
+algorithm.
+(Using R Studio) Code:-
+
+--------------------------------
+
+# Step 1: Install and load the necessary packages
+# Uncomment and run the following commands if you need to install the packages
+# install.packages("arules")
+# install.packages("arulesViz")
+
+library(arules)  # For the Apriori algorithm
+library(arulesViz)  # For visualizing association rules
+
+# Step 2: Load the dataset
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+iris_data <- read.csv(url, header = FALSE)
+colnames(iris_data) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+
+# Step 3: Preprocessing the dataset - Discretize numeric features into categories
+iris_data$Sepal.Length <- cut(iris_data$Sepal.Length, breaks = 3, labels = c("Short", "Medium", "Long"))
+iris_data$Sepal.Width <- cut(iris_data$Sepal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide"))
+iris_data$Petal.Length <- cut(iris_data$Petal.Length, breaks = 3, labels = c("Short", "Medium", "Long"))
+iris_data$Petal.Width <- cut(iris_data$Petal.Width, breaks = 3, labels = c("Narrow", "Medium", "Wide"))
+
+# Step 4: Convert the data to transactions format suitable for the Apriori algorithm
+iris_transactions <- as(iris_data, "transactions")
+
+# Step 5: Apply the Apriori algorithm with defined support and confidence thresholds
+rules <- apriori(iris_transactions, parameter = list(supp = 0.2, conf = 0.8))
+
+# Step 6: Inspect the rules
+inspect(rules)
+
+# Step 7: Visualize the top rules based on lift
+plot(rules, method = "graph", control = list(type = "items"))
+
+# Optional: Sort and inspect top rules based on lift
+top_rules <- sort(rules, by = "lift", decreasing = TRUE)
+inspect(top_rules[1:5])
